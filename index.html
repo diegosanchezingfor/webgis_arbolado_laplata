@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Árboles Singulares · Arbolado Público</title>
+
+  <!-- ===================================================================
+       FUENTES (Google Fonts, gratuitas). Si no hay internet en el equipo,
+       el navegador usa las fuentes de respaldo definidas en el CSS.
+       =================================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- ===================================================================
+       LEAFLET (librería de mapas, gratuita y open source).
+       Se incluye DENTRO del proyecto (carpeta vendor/) para que la app no
+       dependa de ningún CDN: así funciona aunque la red bloquee servidores
+       externos o el navegador tenga escudos activados.
+       =================================================================== -->
+  <link rel="stylesheet" href="vendor/leaflet.css" />
+
+  <!-- Nuestros estilos -->
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ============================ CABECERA ============================ -->
+    <header class="cabecera">
+      <!-- Logo: una hojita SVG simple. Reemplazable por el logo institucional. -->
+      <svg class="cabecera-logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2C7 6 5 11 5 15a7 7 0 0014 0c0-4-2-9-7-13z" fill="#7FB069"/>
+        <path d="M12 21V8" stroke="#1E3A2B" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M12 13l3-3M12 16l-3-3" stroke="#1E3A2B" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+
+      <div class="cabecera-titulos">
+        <!-- El texto se inyecta desde config.js -->
+        <div class="cabecera-titulo"    id="tituloApp">Árboles Singulares</div>
+        <div class="cabecera-subtitulo" id="subtituloApp">Cargando…</div>
+      </div>
+
+      <button class="boton-panel" id="botonPanel">☰ Lista</button>
+    </header>
+
+    <!-- ===================== CUERPO: PANEL + MAPA ====================== -->
+    <div class="contenido">
+
+      <!-- -------- Panel lateral -------- -->
+      <aside class="panel" id="panel">
+        <div class="panel-busqueda">
+          <input type="search" class="campo-busqueda" id="busqueda"
+                 placeholder="Buscar…" autocomplete="off" />
+        </div>
+
+        <div class="panel-filtros">
+          <div class="filtros-rotulo" id="rotuloFiltros">Categorías</div>
+          <div class="chips" id="chips"><!-- chips generados por JS --></div>
+        </div>
+
+        <div class="panel-lista-cab">
+          <span class="panel-lista-titulo" id="rotuloLista">Ejemplares</span>
+          <span class="panel-lista-contador" id="contador">0</span>
+        </div>
+
+        <ul class="lista" id="lista"><!-- items generados por JS --></ul>
+      </aside>
+
+      <!-- -------- Mapa -------- -->
+      <div class="mapa-wrap">
+        <div id="mapa"></div>
+
+        <!-- -------- Ficha descriptiva (oculta hasta seleccionar) -------- -->
+        <section class="ficha" id="ficha" aria-hidden="true">
+          <div class="ficha-cab" id="fichaCab">
+            <button class="ficha-cerrar" id="fichaCerrar" aria-label="Cerrar ficha">✕</button>
+            <span class="ficha-categoria" id="fichaCategoria"></span>
+            <h2 class="ficha-nombre" id="fichaNombre"></h2>
+            <div class="ficha-cientifico" id="fichaCientifico"></div>
+          </div>
+          <div class="ficha-cuerpo" id="fichaCuerpo"><!-- contenido por JS --></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ LIGHTBOX ============================ -->
+  <div class="lightbox" id="lightbox">
+    <img id="lightboxImg" alt="Fotografía ampliada" />
+  </div>
+
+  <!-- ===================================================================
+       SCRIPTS  (el orden importa)
+       1) Leaflet  2) nuestra configuración  3) la lógica de la app
+       =================================================================== -->
+  <script src="vendor/leaflet.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
