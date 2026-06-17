@@ -1,0 +1,7 @@
+Colocá acá las fotos de los árboles.
+
+- Usá los nombres EXACTOS que escribiste en el campo "fotos" del GeoJSON.
+  Ejemplo: si en el GeoJSON pusiste "fotos": ["arbol-001-a.jpg"],
+  el archivo debe llamarse arbol-001-a.jpg y estar en esta carpeta.
+- Formatos recomendados: .jpg o .webp (más livianos que .png para fotos).
+- Tamaño sugerido: redimensionar a 1200 px de ancho máximo para que carguen rápido.

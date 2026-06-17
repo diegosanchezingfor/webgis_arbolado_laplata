@@ -1,0 +1,475 @@
+/* ===========================================================================
+   ESTILOS.CSS  —  Visor de Árboles Singulares
+   Identidad: guía de campo botánica / lámina de herbario.
+   ---------------------------------------------------------------------------
+   Si querés cambiar la apariencia global, empezá por las VARIABLES de :root.
+   Cambiar un color acá lo cambia en toda la aplicación.
+   =========================================================================== */
+
+:root {
+  /* --- Paleta (herbario) --- */
+  --verde-bosque:   #1E3A2B;   /* verde profundo: cabecera, acentos fuertes  */
+  --verde-savia:    #4E7C46;   /* verde vivo: elemento seleccionado, foco    */
+  --pergamino:      #F3EEE3;   /* papel de herbario: fondo de paneles        */
+  --pergamino-claro:#FAF7EF;   /* papel más claro: tarjetas                  */
+  --tinta:          #26241E;   /* tinta: texto principal                     */
+  --tinta-suave:    #6B6658;   /* texto secundario                           */
+  --corteza:        #7A5C3E;   /* marrón corteza: detalles                   */
+  --linea:          rgba(38, 36, 30, 0.12);  /* líneas finas               */
+  --linea-fuerte:   rgba(38, 36, 30, 0.22);
+
+  /* --- Tipografías --- */
+  --display: "Fraunces", Georgia, serif;     /* títulos y nombres de árboles */
+  --texto:   "Inter", system-ui, sans-serif; /* interfaz y cuerpo            */
+  --mono:    "Spline Sans Mono", monospace;  /* códigos, coordenadas         */
+
+  /* --- Medidas --- */
+  --ancho-panel: 360px;
+  --alto-cabecera: 68px;
+  --radio: 10px;
+  --sombra: 0 8px 30px rgba(30, 58, 43, 0.16);
+}
+
+/* --- Reset mínimo --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--texto);
+  color: var(--tinta);
+  background: var(--pergamino);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;            /* la app ocupa toda la pantalla */
+}
+
+/* =========================================================================
+   ESTRUCTURA GENERAL  (cabecera arriba; debajo: panel + mapa)
+   ========================================================================= */
+.app {
+  display: grid;
+  grid-template-rows: var(--alto-cabecera) 1fr;
+  height: 100vh;
+  height: 100dvh;              /* alto real en móviles */
+}
+
+/* ---------- Cabecera ---------- */
+.cabecera {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  background: var(--verde-bosque);
+  color: var(--pergamino);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+  z-index: 600;
+}
+.cabecera-logo {
+  width: 34px; height: 34px;
+  flex: 0 0 auto;
+}
+.cabecera-titulos { line-height: 1.1; }
+.cabecera-titulo {
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 1.35rem;
+  letter-spacing: 0.01em;
+}
+.cabecera-subtitulo {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(243, 238, 227, 0.72);
+  margin-top: 2px;
+}
+/* Botón para mostrar/ocultar el panel (clave en móvil) */
+.boton-panel {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: var(--pergamino);
+  font-family: var(--texto);
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.boton-panel:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* ---------- Cuerpo: panel + mapa ---------- */
+.contenido {
+  position: relative;
+  display: flex;
+  min-height: 0;               /* permite que los hijos hagan scroll */
+}
+
+/* =========================================================================
+   PANEL LATERAL (lista + búsqueda + filtros)
+   ========================================================================= */
+.panel {
+  width: var(--ancho-panel);
+  flex: 0 0 var(--ancho-panel);
+  background: var(--pergamino);
+  border-right: 1px solid var(--linea-fuerte);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  transition: margin-left 0.28s ease;
+  z-index: 500;
+}
+.panel.oculto { margin-left: calc(-1 * var(--ancho-panel)); }
+
+/* Buscador */
+.panel-busqueda { padding: 14px 16px 10px; }
+.campo-busqueda {
+  width: 100%;
+  font-family: var(--texto);
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: var(--radio);
+  background: var(--pergamino-claro);
+  color: var(--tinta);
+}
+.campo-busqueda:focus {
+  outline: 2px solid var(--verde-savia);
+  outline-offset: 1px;
+}
+
+/* Filtros por categoría (chips) */
+.panel-filtros {
+  padding: 4px 16px 12px;
+  border-bottom: 1px solid var(--linea);
+}
+.filtros-rotulo {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--tinta-suave);
+  margin-bottom: 8px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--linea-fuerte);
+  background: transparent;
+  color: var(--tinta);
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+.chip .punto {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.chip:hover { border-color: var(--verde-savia); }
+.chip.activo {
+  background: var(--verde-bosque);
+  color: var(--pergamino);
+  border-color: var(--verde-bosque);
+}
+
+/* Lista de ejemplares */
+.panel-lista-cab {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 16px 6px;
+}
+.panel-lista-titulo {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--tinta-suave);
+}
+.panel-lista-contador {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--corteza);
+}
+.lista {
+  list-style: none;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  padding: 0 10px 16px;
+}
+
+/* Cada item de la lista = una tarjeta de espécimen */
+.item {
+  display: grid;
+  grid-template-columns: 4px 1fr;
+  gap: 12px;
+  padding: 12px 12px 12px 0;
+  margin: 4px 0;
+  border-radius: var(--radio);
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.14s ease;
+}
+.item:hover { background: var(--pergamino-claro); }
+.item.seleccionado {
+  background: var(--pergamino-claro);
+  box-shadow: inset 0 0 0 1px var(--verde-savia);
+}
+/* Barra de color izquierda = categoría */
+.item-barra { border-radius: 4px; }
+.item-nombre {
+  font-family: var(--display);
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.item-cientifico {
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--tinta-suave);
+  margin-top: 1px;
+}
+.item-meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--corteza);
+}
+.item-categoria {
+  display: inline-block;
+  margin-top: 7px;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #fff;
+}
+.lista-vacia {
+  padding: 28px 18px;
+  text-align: center;
+  color: var(--tinta-suave);
+  font-size: 0.88rem;
+}
+
+/* =========================================================================
+   MAPA
+   ========================================================================= */
+.mapa-wrap { position: relative; flex: 1 1 auto; min-width: 0; }
+#mapa { position: absolute; inset: 0; background: #dfe6df; }
+
+/* Marcador en forma de gota/hoja, coloreado por categoría.
+   El color se inyecta desde JS con la variable --c. */
+.marcador {
+  width: 26px; height: 26px;
+  position: relative;
+}
+.marcador-gota {
+  width: 24px; height: 24px;
+  background: var(--c, var(--verde-savia));
+  border: 2.5px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease;
+}
+/* Estado resaltado del marcador seleccionado */
+.marcador.activo .marcador-gota {
+  transform: rotate(-45deg) scale(1.25);
+  box-shadow: 0 0 0 6px rgba(78, 124, 70, 0.3), 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* =========================================================================
+   FICHA DESCRIPTIVA (panel deslizante a la derecha)
+   ========================================================================= */
+.ficha {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 400px;
+  max-width: 92vw;
+  background: var(--pergamino-claro);
+  box-shadow: var(--sombra);
+  transform: translateX(105%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 700;
+  display: flex;
+  flex-direction: column;
+}
+.ficha.abierta { transform: translateX(0); }
+
+/* Cabecera de la ficha = banda de espécimen */
+.ficha-cab {
+  position: relative;
+  padding: 18px 48px 16px 20px;
+  color: var(--pergamino);
+  background: var(--verde-bosque);
+}
+.ficha-categoria {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  opacity: 0.85;
+  margin-bottom: 6px;
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.ficha-nombre {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.12;
+}
+.ficha-cientifico {
+  font-style: italic;
+  opacity: 0.82;
+  margin-top: 3px;
+  font-size: 0.92rem;
+}
+.ficha-cerrar {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 30px; height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.ficha-cerrar:hover { background: rgba(255, 255, 255, 0.3); }
+
+.ficha-cuerpo { overflow-y: auto; padding: 16px 20px 28px; }
+
+/* Galería */
+.galeria { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 16px; }
+.galeria-foto {
+  height: 120px;
+  border-radius: 8px;
+  cursor: zoom-in;
+  flex: 0 0 auto;
+  border: 1px solid var(--linea);
+  object-fit: cover;
+}
+.galeria-vacia {
+  height: 110px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--linea-fuerte);
+  border-radius: 8px;
+  color: var(--tinta-suave);
+  font-size: 0.82rem;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+/* Tabla de datos tipo etiqueta de herbario */
+.datos-tabla { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.datos-tabla tr { border-bottom: 1px solid var(--linea); }
+.datos-tabla th {
+  text-align: left;
+  vertical-align: top;
+  padding: 8px 12px 8px 0;
+  font-weight: 500;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tinta-suave);
+  white-space: nowrap;
+  width: 42%;
+}
+.datos-tabla td {
+  padding: 8px 0;
+  font-size: 0.9rem;
+}
+.datos-tabla td.mono { font-family: var(--mono); color: var(--corteza); }
+
+.ficha-bloque { margin-bottom: 16px; }
+.ficha-bloque h4 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--verde-savia);
+  margin-bottom: 6px;
+}
+.ficha-bloque p { font-size: 0.92rem; line-height: 1.55; color: var(--tinta); }
+
+/* Adjuntos: video, pdf, enlaces */
+.adjuntos { display: flex; flex-direction: column; gap: 8px; }
+.adjunto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  text-decoration: none;
+  color: var(--verde-bosque);
+  padding: 9px 12px;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 8px;
+  transition: background 0.14s ease;
+}
+.adjunto:hover { background: var(--pergamino); }
+.video-embed {
+  width: 100%; aspect-ratio: 16/9;
+  border: none; border-radius: 8px; margin-top: 4px;
+}
+
+/* =========================================================================
+   LIGHTBOX (ampliar fotos)
+   ========================================================================= */
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(20, 24, 18, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: zoom-out;
+  padding: 30px;
+}
+.lightbox.abierto { display: flex; }
+.lightbox img {
+  max-width: 100%; max-height: 100%;
+  border-radius: 6px;
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* =========================================================================
+   RESPONSIVE  (tablet y teléfono)
+   ========================================================================= */
+@media (max-width: 760px) {
+  :root { --ancho-panel: 100%; }
+
+  /* El panel pasa a ocupar toda la pantalla por encima del mapa */
+  .panel {
+    position: absolute;
+    inset: 0;
+    border-right: none;
+  }
+  .panel.oculto { margin-left: -100%; }
+
+  .ficha { width: 100%; max-width: 100%; }
+  .cabecera-subtitulo { display: none; }
+}
+
+/* Respeta a quienes prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* Ajuste fino de los controles de Leaflet para que combinen con la paleta */
+.leaflet-bar a {
+  color: var(--verde-bosque) !important;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+}
